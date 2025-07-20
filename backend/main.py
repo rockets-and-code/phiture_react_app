@@ -1,8 +1,7 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import Optional
 import uvicorn
+from models import TeamBuilderResponse
 
 app = FastAPI(
     title="Team Builder API",
@@ -18,12 +17,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Response models
-class TeamBuilderResponse(BaseModel):
-    status: str
-    message: str
-    budget: Optional[float] = None
 
 @app.get("/")
 async def root():
