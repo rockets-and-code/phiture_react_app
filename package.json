@@ -1,0 +1,32 @@
+{
+  "name": "phiture-react-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+        "lint": "next lint",
+        "docker:up": "docker-compose up --build",
+        "docker:down": "docker-compose down",
+        "docker:logs": "docker-compose logs -f",
+        "docker:build": "docker build -t phiture-budget-app .",
+        "backend:dev": "cd backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000",
+        "backend:logs": "docker-compose logs -f backend",
+        "frontend:logs": "docker-compose logs -f frontend"
+  },
+  "dependencies": {
+    "axios": "^1.10.0",
+    "next": "14.0.0",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.0",
+    "typescript": "^5"
+  }
+}
