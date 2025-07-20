@@ -1,0 +1,218 @@
+# Phiture React App - Full Stack Budget Application
+
+A modern full-stack web application built with Next.js (React + TypeScript) frontend and FastAPI backend, featuring budget input functionality with API integration.
+
+## 🏗️ Architecture
+
+- **Frontend**: Next.js 14 with TypeScript, React 18, and Axios
+- **Backend**: FastAPI (Python) with Pydantic models
+- **Containerization**: Docker & Docker Compose
+- **Styling**: Custom CSS with modern responsive design
+
+## 🚀 Features
+
+### Frontend Features
+- ✅ Budget input form with validation
+- ✅ Real-time error handling and user feedback
+- ✅ Loading states and success messages
+- ✅ Responsive design with modern UI
+- ✅ TypeScript for type safety
+- ✅ Axios integration for API calls
+
+### Backend Features
+- ✅ FastAPI with automatic API documentation
+- ✅ GET `/team-builder?budget=XXX` endpoint
+- ✅ Input validation and error handling
+- ✅ CORS enabled for frontend integration
+- ✅ Pydantic models for data validation
+- ✅ Health check endpoint
+
+### DevOps Features
+- ✅ Dockerized frontend and backend
+- ✅ Multi-service Docker Compose setup
+- ✅ Optimized Docker builds with multi-stage builds
+- ✅ Non-root containers for security
+- ✅ Hot reload in development mode
+
+## 📁 Project Structure
+
+```
+phiture_react_app/
+├── src/                        # Next.js app directory
+│   ├── app/
+│   │   ├── globals.css        # Global styles
+│   │   ├── layout.tsx         # Root layout component
+│   │   └── page.tsx           # Main page component
+│   └── components/
+│       └── BudgetForm.tsx     # Budget input form component
+├── backend/                   # FastAPI backend
+│   ├── main.py               # FastAPI application
+│   ├── requirements.txt      # Python dependencies
+│   └── Dockerfile           # Backend container config
+├── docker-compose.yml        # Multi-service orchestration
+├── Dockerfile               # Frontend container config
+├── package.json             # Node.js dependencies & scripts
+├── tsconfig.json           # TypeScript configuration
+└── next.config.js          # Next.js configuration
+```
+
+## 🛠️ Installation & Setup
+
+### Prerequisites
+- Docker & Docker Compose
+- Node.js 18+ (for local development)
+- Python 3.11+ (for local backend development)
+
+### Quick Start with Docker
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/rockets-and-code/phiture_react_app.git
+   cd phiture_react_app
+   ```
+
+2. **Start the full application**
+   ```bash
+   npm run docker:up
+   ```
+   This will:
+   - Build both frontend and backend containers
+   - Start the services with docker-compose
+   - Frontend available at: http://localhost:3000
+   - Backend API available at: http://localhost:8000
+
+3. **Stop the application**
+   ```bash
+   npm run docker:down
+   ```
+
+### Local Development Setup
+
+#### Frontend Development
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+#### Backend Development
+```bash
+# Navigate to backend directory
+cd backend
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Start FastAPI development server
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+## 🎯 API Endpoints
+
+### FastAPI Backend (Port 8000)
+
+| Method | Endpoint | Description | Parameters |
+|--------|----------|-------------|------------|
+| GET | `/` | API information and available endpoints | None |
+| GET | `/team-builder` | Main team builder endpoint | `budget` (float, required) |
+| GET | `/health` | Health check endpoint | None |
+| GET | `/docs` | Interactive API documentation (Swagger UI) | None |
+| GET | `/redoc` | Alternative API documentation | None |
+
+#### Example API Usage
+
+```bash
+# Test the team-builder endpoint
+curl "http://localhost:8000/team-builder?budget=1000.50"
+
+# Expected response:
+{
+  "status": "success",
+  "message": "Team builder endpoint called successfully with budget: $1,000.50",
+  "budget": 1000.50
+}
+```
+
+## 📝 Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start Next.js development server |
+| `npm run build` | Build Next.js for production |
+| `npm run start` | Start Next.js production server |
+| `npm run lint` | Run ESLint |
+| `npm run docker:up` | Start full stack with Docker Compose |
+| `npm run docker:down` | Stop Docker Compose services |
+| `npm run docker:logs` | View logs from all containers |
+| `npm run backend:dev` | Start FastAPI backend locally |
+| `npm run backend:logs` | View backend container logs |
+| `npm run frontend:logs` | View frontend container logs |
+
+## 🌐 Usage
+
+1. **Access the application** at http://localhost:3000
+2. **Enter a budget amount** in the input field
+3. **Click "Submit Budget"** to send the request to the FastAPI backend
+4. **View the response** displaying the API status, message, and budget confirmation
+5. **Use "Reset Budget"** to clear the form and start over
+
+## 🔧 Configuration
+
+### Environment Variables
+
+The application supports the following environment variables:
+
+#### Frontend
+- `NODE_ENV`: Environment mode (development/production)
+- `NEXT_TELEMETRY_DISABLED`: Disable Next.js telemetry
+
+#### Backend
+- `PYTHONPATH`: Python module path
+
+### Docker Configuration
+
+Both services are configured with:
+- Automatic restart policies
+- Health checks
+- Proper networking between frontend and backend
+- Optimized builds with layer caching
+
+## 🚦 Development Workflow
+
+1. **Make changes** to frontend (src/) or backend (backend/) code
+2. **Test locally** using development servers
+3. **Build and test** with Docker: `npm run docker:up`
+4. **Commit changes** with descriptive messages
+5. **Push to repository**
+
+## 📊 API Documentation
+
+When the backend is running, visit:
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Port already in use**
+   ```bash
+   # Kill processes on ports 3000 or 8000
+   lsof -ti:3000 | xargs kill -9
+   lsof -ti:8000 | xargs kill -9
+   ```
+
+2. **Docker build issues**
+   ```bash
+   # Clean up Docker
+   docker system prune -a
+   docker-compose down --volumes --remove-orphans
+   ```
+
+3. **API connection errors**
+   - Ensure backend is running on port 8000
+   - Check CORS configuration in `backend/main.py`
+   - Verify network connectivity between containers
+
