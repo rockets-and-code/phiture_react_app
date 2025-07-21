@@ -98,6 +98,10 @@ export default function Home() {
 
                             {apiResponse && apiResponse.products && (
                                 <div className="api-response-container">
+                                    <h4 className='api-response-header'>Total cost:</h4>
+                                    <p className="total-cost">
+                                        ${apiResponse.total_cost ? apiResponse.total_cost.toLocaleString() : 'N/A'}
+                                    </p>
                                     <h4 className='api-response-header'>API Response:</h4>
                                     <table className="product-table">
                                         <thead>
@@ -119,6 +123,7 @@ export default function Home() {
                                             ))}
                                         </tbody>
                                     </table>
+                                    
                                 </div>
                             )}
 

@@ -1,6 +1,7 @@
+from typing import List
 from models import Product, ProductCategory
 
-def curate_product_team(products, budget) -> list[Product]:
+def curate_product_team(products, budget) -> List[Product]:
     """
     Curate product teams based on the provided budget.
     Selects 5 products from 5 distinct categories, staying within budget
@@ -25,8 +26,6 @@ def curate_product_team(products, budget) -> list[Product]:
                 categories[category] = []
             categories[category].append(product)
 
-    print("Available categories", categories)
-    
     # Check if we have at least 5 distinct categories
     if len(categories) < 5:
         # If we don't have 5 categories, return empty list or handle gracefully
@@ -35,8 +34,6 @@ def curate_product_team(products, budget) -> list[Product]:
     # Sort products within each category by value (descending)
     for category in categories:
         categories[category].sort(key=lambda x: x.get('value', 0), reverse=True)
-
-    print("Sorted categories by value", categories)
     
     # Use dynamic programming approach to find the best combination
     # that stays within budget and maximizes total value
@@ -66,7 +63,8 @@ def curate_product_team(products, budget) -> list[Product]:
 def find_best_combination(categories, budget):
     """
     Find the best combination of 5 products (one from each of 5 categories)
-    that maximizes total value while staying within budget.
+    that balances value optimization with budget utilization.
+    Higher budgets will prefer more expensive, higher-quality items.
     
     Args:
         categories (dict): Dictionary mapping category names to lists of products
@@ -81,7 +79,7 @@ def find_best_combination(categories, budget):
     from itertools import combinations #https://docs.python.org/3/library/itertools.html#itertools.combinations
     
     best_combination = None
-    best_value = 0
+    best_score = 0
     
     # Try all possible combinations of 5 categories
     for selected_categories in combinations(category_names, 5):
@@ -89,9 +87,28 @@ def find_best_combination(categories, budget):
         combination = find_best_products_for_categories(categories, selected_categories, budget)
         
         if combination:
+            total_cost = sum(product['price'] for product in combination)
             total_value = sum(product.get('value', 0) for product in combination)
-            if total_value > best_value:
-                best_value = total_value
+            
+            # Calculate a composite score that balances value and budget utilization
+            # Higher budgets should prefer higher-cost, higher-quality items
+            budget_utilization = total_cost / budget if budget > 0 else 0
+            
+            # Dynamic weighting based on budget level
+            # Low budgets: focus more on pure value (rating/price)
+            # High budgets: balance value with utilizing more of the budget for quality
+            if budget <= 500:
+                # Low budget: prioritize value
+                composite_score = total_value + (budget_utilization * 0.5)
+            elif budget <= 1000:
+                # Medium budget: balance value and budget utilization
+                composite_score = (total_value * 0.7) + (budget_utilization * 2)
+            else:
+                # High budget: prioritize budget utilization for quality
+                composite_score = (total_value * 0.5) + (budget_utilization * 3) + (total_cost / 100)
+            
+            if composite_score > best_score:
+                best_score = composite_score
                 best_combination = combination
     
     return best_combination
@@ -101,7 +118,7 @@ def find_best_products_for_categories(categories, selected_categories, budget):
     """
     Find the best product from each selected category that fits within budget.
     Uses exhaustive search to test all possible combinations and find the one
-    with the highest total value that stays within budget.    
+    that optimizes for both value and budget utilization based on budget level.
 
     Args:
         categories (dict): Dictionary mapping category names to lists of products
@@ -116,7 +133,7 @@ def find_best_products_for_categories(categories, selected_categories, budget):
     
     # Use iterative approach to find best combination within budget
     best_combination = None
-    best_value = 0
+    best_score = 0
     
     # For performance, limit to top products from each category
     MAX_PRODUCTS_PER_CATEGORY = 10
@@ -124,15 +141,28 @@ def find_best_products_for_categories(categories, selected_categories, budget):
     
     # 1. itertools_product(*limited_products) generates ALL possible combinations of products (one from each of the 5 selected categories)
     # 2. For each complete combination, it checks if the total cost is within budget
-    # 3. If within budget, it calculates the total value and keeps track of the best one found so far
+    # 3. If within budget, it calculates a composite score and keeps track of the best one found so far
     from itertools import product as itertools_product
     
     for combination in itertools_product(*limited_products):
         total_cost = sum(product['price'] for product in combination)
         if total_cost <= budget:
             total_value = sum(product.get('value', 0) for product in combination)
-            if total_value > best_value:
-                best_value = total_value
+            budget_utilization = total_cost / budget if budget > 0 else 0
+            
+            # Use the same scoring logic as the parent function
+            if budget <= 500:
+                # Low budget: prioritize value
+                composite_score = total_value + (budget_utilization * 0.5)
+            elif budget <= 1000:
+                # Medium budget: balance value and budget utilization
+                composite_score = (total_value * 0.7) + (budget_utilization * 2)
+            else:
+                # High budget: prioritize budget utilization for quality
+                composite_score = (total_value * 0.5) + (budget_utilization * 3) + (total_cost / 100)
+            
+            if composite_score > best_score:
+                best_score = composite_score
                 best_combination = list(combination)
     
     return best_combination
@@ -157,20 +187,57 @@ def calculate_rating_to_price_ratio(products):
 
 def lowest_price_combination(products):
     """
-    Find the total price of the cheapest combination of products, one from each category.
+    Find the total price of the cheapest combination of 5 products from 5 distinct categories.
+    This represents the minimum budget required to form any team.
 
     Args:
         products (list): List of product dictionaries.
 
     Returns:
-        int: The total price of the cheapest combination.
+        int: The total price of the cheapest 5-product combination from 5 categories.
     """
+    # Group products by category and sort each category by price (ascending)
     categories = {}
     for product in products:
         category = product['category']
-        if category not in categories or product['price'] < categories[category]['price']:
-            categories[category] = product
-
-    total_price = sum(product['price'] for product in categories.values())
-    print(f"Lowest price combination total: ${total_price}")
-    return total_price
+        if category not in categories:
+            categories[category] = []
+        categories[category].append(product)
+    
+    # Sort products within each category by price (cheapest first)
+    for category in categories:
+        categories[category].sort(key=lambda x: x['price'])
+    
+    # Check if we have at least 5 distinct categories
+    if len(categories) < 5:
+        raise ValueError("Not enough categories available. Need at least 5 distinct categories.")
+    
+    # Try all combinations of 5 categories and find the cheapest total
+    from itertools import combinations
+    
+    min_total_price = float('inf')
+    cheapest_combination = None
+    
+    # Try all possible combinations of 5 categories from available categories
+    for selected_categories in combinations(categories.keys(), 5):
+        # For each combination of 5 categories, take the cheapest product from each
+        total_price = 0
+        combination = []
+        
+        for category in selected_categories:
+            cheapest_product = categories[category][0]  # First item is cheapest due to sorting
+            total_price += cheapest_product['price']
+            combination.append(cheapest_product)
+        
+        # Keep track of the overall cheapest combination
+        if total_price < min_total_price:
+            min_total_price = total_price
+            cheapest_combination = combination
+    
+    # Optional debug output (uncomment for debugging)
+    # print(f"Cheapest 5-product combination total: ${min_total_price}")
+    # print(f"Categories: {[p['category'] for p in cheapest_combination]}")
+    # product_details = [f"{p['name']} (${p['price']})" for p in cheapest_combination]
+    # print(f"Products: {product_details}")
+    
+    return min_total_price

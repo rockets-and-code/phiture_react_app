@@ -54,12 +54,14 @@ async def build_team(budget: int = Query(..., description="Budget amount for tea
 
     # curate product teams based on budget
     curated_team = curate_product_team(sample_product_json, budget)
+    total_cost = sum(product.price for product in curated_team)
 
     return TeamBuilderResponse(
         status="success",
         message=f"Team builder endpoint called successfully with budget: ${budget:,.2f}",
         budget=budget,
-        products=curated_team
+        products=curated_team,
+        total_cost=total_cost
     )
 
 @app.get("/health")

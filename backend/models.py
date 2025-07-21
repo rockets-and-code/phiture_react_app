@@ -33,8 +33,9 @@ class Product(BaseModel):
 class TeamBuilderResponse(BaseModel):
     status: str
     message: str
-    budget: Optional[float] = None
+    budget: Optional[int] = None
     products: Optional[List[Product]] = None
+    total_cost: Optional[int] = None
 
 class NotFoundException(BaseModel):
     """

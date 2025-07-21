@@ -169,7 +169,7 @@ body {
     margin-bottom: 0.5rem;
 }
 
-.budget-summary-amount {
+.budget-summary-amount, .total-cost {
     font-size: 1.5rem;
     font-weight: bold;
     color: #059669;
