@@ -23,7 +23,7 @@ class ProductCategory(str, Enum):
 class Product(BaseModel):
     id: int
     name: str
-    price: float
+    price: int
     rating: float
     description: Optional[str] = None
     category: Optional[ProductCategory]

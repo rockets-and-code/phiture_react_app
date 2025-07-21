@@ -21,7 +21,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmit, isLoading = false }) 
             return
         }
 
-        const budgetNumber = parseFloat(budget)
+        const budgetNumber = parseInt(budget)
         
         if (isNaN(budgetNumber)) {
             setError('Please enter a valid number')
@@ -61,9 +61,9 @@ const BudgetForm: React.FC<BudgetFormProps> = ({ onSubmit, isLoading = false }) 
             id="budget"
             value={budget}
             onChange={handleInputChange}
-            placeholder="Enter your budget (e.g., 1000.00)"
+            placeholder="Enter your budget (e.g., 1000)"
             className="input"
-            step="0.01"
+            step="1"
             min="0"
             disabled={isLoading}
             />

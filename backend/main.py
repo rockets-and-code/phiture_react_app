@@ -4,7 +4,7 @@ import uvicorn
 from models import TeamBuilderResponse, NotFoundException
 from constants import sample_product_json
 
-from logic import calculate_rating_to_price_ratio, curate_product_team
+from logic import calculate_rating_to_price_ratio, curate_product_team, lowest_price_combination
 
 app = FastAPI(
     title="Team Builder API",
@@ -32,7 +32,7 @@ async def root():
     }
 
 @app.get("/team-builder", responses={500:{'model': NotFoundException}})
-async def build_team(budget: float = Query(..., description="Budget amount for team building", ge=0)) -> TeamBuilderResponse:
+async def build_team(budget: int = Query(..., description="Budget amount for team building", ge=0)) -> TeamBuilderResponse:
     """
     Build a team based on the provided budget.
     
@@ -42,31 +42,28 @@ async def build_team(budget: float = Query(..., description="Budget amount for t
     Returns:
         TeamBuilderResponse: Status, message, and budget information
     """
-    try:
-        # if budget is less than cheapest team combination (hardcoded to budgetb = 20 for now), return error
-        if budget < 20:
-            raise HTTPException(
-                status_code=400,
-                detail="Budget is too low to build a team. Minimum budget is $20."
-            )
-        #  calculate_rating_to_price_ratio for products - ideally don't do this step every time we call endpoint - but working with sample data here so it's ok
-        updated_products = calculate_rating_to_price_ratio(sample_product_json)
-        print(f"Products with rating to price ratio: {updated_products}")
+    # if budget is less than cheapest team combination, return error
+    minimum_budget = lowest_price_combination(sample_product_json) 
+    # do not allow budget to be less than minimum budget
 
-        # curate product teams based on budget
-        curated_team = curate_product_team(updated_products, budget)
-
-        return TeamBuilderResponse(
-            status="success",
-            message=f"Team builder endpoint called successfully with budget: ${budget:,.2f}",
-            budget=budget,
-            products=curated_team
-        )
-    except Exception as e:
+    if budget < minimum_budget:
         raise HTTPException(
-            status_code=500,
-            detail="An error occurred while building the team"
+            status_code=400,
+            detail=f"Budget must be at least ${minimum_budget} to build a team"
         )
+        
+    #  calculate_rating_to_price_ratio for products - ideally don't do this step every time we call endpoint - but working with sample data here so it's ok
+    updated_products = calculate_rating_to_price_ratio(sample_product_json)
+
+    # curate product teams based on budget
+    curated_team = curate_product_team(updated_products, budget)
+
+    return TeamBuilderResponse(
+        status="success",
+        message=f"Team builder endpoint called successfully with budget: ${budget:,.2f}",
+        budget=budget,
+        products=curated_team
+    )
 
 @app.get("/health")
 async def health_check():

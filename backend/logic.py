@@ -49,3 +49,23 @@ def calculate_rating_to_price_ratio(products):
         product['value'] = product['rating'] / product['price']
     
     return products
+
+def lowest_price_combination(products):
+    """
+    Find the total price of the cheapest combination of products, one from each category.
+
+    Args:
+        products (list): List of product dictionaries.
+
+    Returns:
+        int: The total price of the cheapest combination.
+    """
+    categories = {}
+    for product in products:
+        category = product['category']
+        if category not in categories or product['price'] < categories[category]['price']:
+            categories[category] = product
+
+    total_price = sum(product['price'] for product in categories.values())
+    print(f"Lowest price combination total: ${total_price}")
+    return total_price
