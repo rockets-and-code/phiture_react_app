@@ -99,6 +99,22 @@ body {
     cursor: not-allowed;
 }
 
+.reset-button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #6b7280;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.reset-button:hover {
+    background-color: #4b5563;
+}
+
 /* MESSAGE STYLES */
 
 .success-message {
@@ -157,4 +173,20 @@ body {
     font-size: 1.5rem;
     font-weight: bold;
     color: #059669;
+}
+
+/* TABLE */
+table.product-table {
+    border: 1px solid #000;
+    border-spacing: 0;
+}
+.product-table th {
+    border-bottom: 1px solid;
+}
+.product-table td, .product-table th {
+    border-right: 1px solid;
+    padding: 5px;
+}
+.product-table td:last-of-type, .product-table th:last-of-type {
+    border-right: none;
 }
