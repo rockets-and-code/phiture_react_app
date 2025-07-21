@@ -21,16 +21,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-async def root():
-    return {
-        "status": "success",
-        "message": "Team Builder API is running",
-        "endpoints": [
-            {"method": "GET", "path": "/team-builder", "description": "Build a team based on budget"}
-        ]
-    }
-
 @app.get("/team-builder", responses={500:{'model': NotFoundException}})
 async def build_team(budget: int = Query(..., description="Budget amount for team building", ge=0)) -> TeamBuilderResponse:
     """
@@ -63,14 +53,6 @@ async def build_team(budget: int = Query(..., description="Budget amount for tea
         products=curated_team,
         total_cost=total_cost
     )
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "message": "API is running successfully"
-    }
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
