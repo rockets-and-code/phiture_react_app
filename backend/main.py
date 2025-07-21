@@ -1,7 +1,10 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from models import TeamBuilderResponse
+from models import TeamBuilderResponse, NotFoundException
+from constants import sample_product_json
+
+from logic import calculate_rating_to_price_ratio, curate_product_team
 
 app = FastAPI(
     title="Team Builder API",
@@ -28,8 +31,8 @@ async def root():
         ]
     }
 
-@app.get("/team-builder", response_model=TeamBuilderResponse)
-async def build_team(budget: float = Query(..., description="Budget amount for team building", ge=0)):
+@app.get("/team-builder", responses={500:{'model': NotFoundException}})
+async def build_team(budget: float = Query(..., description="Budget amount for team building", ge=0)) -> TeamBuilderResponse:
     """
     Build a team based on the provided budget.
     
@@ -39,11 +42,31 @@ async def build_team(budget: float = Query(..., description="Budget amount for t
     Returns:
         TeamBuilderResponse: Status, message, and budget information
     """
-    return TeamBuilderResponse(
-        status="success",
-        message=f"Team builder endpoint called successfully with budget: ${budget:,.2f}",
-        budget=budget
-    )
+    try:
+        # if budget is less than cheapest team combination (hardcoded to budgetb = 20 for now), return error
+        if budget < 20:
+            raise HTTPException(
+                status_code=400,
+                detail="Budget is too low to build a team. Minimum budget is $20."
+            )
+        #  calculate_rating_to_price_ratio for products - ideally don't do this step every time we call endpoint - but working with sample data here so it's ok
+        updated_products = calculate_rating_to_price_ratio(sample_product_json)
+        print(f"Products with rating to price ratio: {updated_products}")
+
+        # curate product teams based on budget
+        curated_team = curate_product_team(updated_products, budget)
+
+        return TeamBuilderResponse(
+            status="success",
+            message=f"Team builder endpoint called successfully with budget: ${budget:,.2f}",
+            budget=budget,
+            products=curated_team
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail="An error occurred while building the team"
+        )
 
 @app.get("/health")
 async def health_check():
