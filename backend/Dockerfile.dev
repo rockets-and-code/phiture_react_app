@@ -1,0 +1,18 @@
+# Development Dockerfile for FastAPI backend with hot reload
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install watchdog for better file watching on Docker
+RUN pip install watchdog
+
+# Expose port 8000
+EXPOSE 8000
+
+# The command will be overridden by docker-compose for hot reload
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
