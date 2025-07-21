@@ -4,7 +4,7 @@ import uvicorn
 from models import TeamBuilderResponse, NotFoundException
 from constants import sample_product_json
 
-from logic import calculate_rating_to_price_ratio, curate_product_team, lowest_price_combination
+from logic import curate_product_team, lowest_price_combination
 
 app = FastAPI(
     title="Team Builder API",
@@ -51,12 +51,9 @@ async def build_team(budget: int = Query(..., description="Budget amount for tea
             status_code=400,
             detail=f"Budget must be at least ${minimum_budget} to build a team"
         )
-        
-    #  calculate_rating_to_price_ratio for products - ideally don't do this step every time we call endpoint - but working with sample data here so it's ok
-    updated_products = calculate_rating_to_price_ratio(sample_product_json)
 
     # curate product teams based on budget
-    curated_team = curate_product_team(updated_products, budget)
+    curated_team = curate_product_team(sample_product_json, budget)
 
     return TeamBuilderResponse(
         status="success",
