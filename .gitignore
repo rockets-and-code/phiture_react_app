@@ -120,6 +120,7 @@ wheels/
 MANIFEST
 
 # Virtual environments
+test-env/
 venv/
 ENV/
 env/

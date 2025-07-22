@@ -275,15 +275,11 @@ class TestAPIIntegration:
     
     def test_complete_workflow_valid_budget(self):
         """Test complete workflow with valid budget"""
-        # 1. Check API is running
-        health_response = client.get("/health")
-        assert health_response.status_code == 200
-        
-        # 2. Get minimum budget info (indirectly through error message)
+        # 1.Get minimum budget info (indirectly through error message)
         low_budget_response = client.get("/team-builder?budget=1")
         assert low_budget_response.status_code == 400
         
-        # 3. Use valid budget
+        # 2. Use valid budget
         min_budget = lowest_price_combination(sample_product_json)
         valid_budget = min_budget + 100
         
@@ -294,7 +290,7 @@ class TestAPIIntegration:
         assert data["status"] == "success"
         assert len(data["products"]) == 5
         
-        # 4. Verify product data integrity
+        # 3. Verify product data integrity
         total_cost = sum(p["price"] for p in data["products"])
         assert total_cost <= valid_budget
         

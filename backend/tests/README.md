@@ -1,159 +1,233 @@
-# Team Builder API Test Suite
+# Team Builder API - Testing Setup Guide
 
-This directory contains comprehensive unit tests for the Team Builder API, covering both the API endpoints (`main.py`) and the core business logic (`logic.py`).
+This guide provides step-by-step instructions for setting up and running unit tests in a clean virtual environment.
 
-## Test Structure
+## 🎯 Quick Start
 
-```
-tests/
-├── __init__.py                 # Package marker
-├── test_logic.py              # Tests for logic functions
-├── test_main.py               # Tests for API endpoints
-└── README.md                  # This file
-```
-
-## Test Coverage
-
-### Logic Tests (`test_logic.py`)
-
-**`TestCalculateRatingToPriceRatio`**
-- ✅ Basic calculation verification
-- ✅ Data preservation validation  
-- ✅ Edge cases (very low/high prices)
-
-**`TestLowestPriceCombination`**
-- ✅ Minimum budget calculation with sample data ($245)
-- ✅ Error handling for insufficient categories
-- ✅ Correct selection of cheapest products per category
-- ✅ Multiple products per category handling
-
-**`TestFindBestProductsForCategories`**
-- ✅ Product selection within reasonable budgets
-- ✅ Tight budget constraint handling
-- ✅ Insufficient budget edge cases
-
-**`TestFindBestCombination`**
-- ✅ Optimal combination selection
-- ✅ Budget sensitivity verification
-
-**`TestCurateProductTeam`** (Main Function)
-- ✅ End-to-end team curation with sample data
-- ✅ Minimum budget handling
-- ✅ Insufficient categories error handling
-- ✅ Budget sensitivity (different budgets → different results)
-- ✅ Product model conversion validation
-
-### API Tests (`test_main.py`)
-
-**`TestRootEndpoint`**
-- ✅ Root endpoint response structure
-
-**`TestHealthEndpoint`**
-- ✅ Health check functionality
-
-**`TestTeamBuilderEndpoint`**
-- ✅ Valid budget requests
-- ✅ Minimum budget acceptance
-- ✅ Below-minimum budget rejection (400 error)
-- ✅ Negative budget validation (422 error)
-- ✅ Zero budget handling
-- ✅ Missing/invalid parameters (422 errors)
-- ✅ Float budget type validation
-- ✅ High budget handling
-- ✅ Budget sensitivity verification
-
-**`TestTeamBuilderEndpointAsync`**
-- ✅ Direct async function testing
-- ✅ Response model validation
-- ✅ Exception handling
-
-**`TestTeamBuilderEndpointEdgeCases`**
-- ✅ Empty result handling
-- ✅ Exception propagation
-- ✅ CORS middleware verification
-
-**`TestAPIIntegration`**
-- ✅ Complete workflow testing
-- ✅ API consistency across multiple calls
-
-## Running Tests
-
-### Run All Tests
 ```bash
-# From backend directory
+# Navigate to backend directory
+cd /Users/marianita/phiture_react_app/backend
+
+# Create and activate virtual environment
+python3 -m venv test-env
+source test-env/bin/activate
+
+# Install dependencies and run tests
+pip install -r requirements.txt -r test-requirements.txt
+python3 run_tests.py
+
+# Deactivate when done
+deactivate
+```
+
+## 📋 Detailed Setup Instructions
+
+### Step 1: Navigate to Backend Directory
+```bash
+cd /Users/marianita/phiture_react_app/backend
+pwd  # Should show: /Users/marianita/phiture_react_app/backend
+```
+
+### Step 2: Create Virtual Environment
+```bash
+# Create a new virtual environment named 'test-env'
+python3 -m venv test-env
+```
+
+### Step 3: Activate Virtual Environment
+
+**On macOS/Linux:**
+```bash
+source test-env/bin/activate
+```
+
+**On Windows:**
+```cmd
+test-env\Scripts\activate
+```
+
+**You'll know it's activated when you see:**
+```bash
+(test-env) user@computer:/path/to/backend$
+```
+
+### Step 4: Install Dependencies
+```bash
+# Install main application dependencies
+pip install -r requirements.txt
+
+# Install test dependencies
+pip install -r test-requirements.txt
+
+# Or install everything at once
+pip install -r requirements.txt -r test-requirements.txt
+```
+
+### Step 5: Verify Installation
+```bash
+# Check that pytest is installed
+python3 -m pytest --version
+
+# Check that all packages are installed
+pip list
+```
+
+### Step 6: Run Tests
+```bash
+# Run all tests (recommended)
+python3 run_tests.py
+
+# Or use pytest directly
+python3 -m pytest tests/ -v
+```
+
+### Step 7: Deactivate When Done
+```bash
+# Deactivate the virtual environment
+deactivate
+```
+
+## 🔄 Daily Testing Workflow
+
+### First Time Setup
+```bash
+cd /Users/marianita/phiture_react_app/backend
+python3 -m venv test-env
+source test-env/bin/activate
+pip install -r requirements.txt -r test-requirements.txt
+```
+
+### Regular Testing Sessions
+```bash
+# Activate environment
+cd /Users/marianita/phiture_react_app/backend
+source test-env/bin/activate
+
+# Run tests
+python3 run_tests.py
+
+# Deactivate when done
+deactivate
+```
+
+## 📁 File Structure Overview
+
+```
+/Users/marianita/phiture_react_app/backend/
+├── test-env/                      # Virtual environment (created by you)
+│   ├── bin/activate              # Activation script
+│   ├── lib/python3.x/            # Installed packages
+│   └── ...
+├── tests/                        # Test files
+│   ├── test_logic.py            # Logic function tests
+│   ├── test_main.py             # API endpoint tests
+│   └── README.md                # Test documentation
+├── requirements.txt              # Main app dependencies
+├── test-requirements.txt         # Test-specific dependencies
+├── run_tests.py                  # Custom test runner
+├── pytest.ini                   # Test configuration
+├── main.py                       # API endpoints
+├── logic.py                      # Business logic
+└── README_TESTING.md             # This file
+```
+
+## 📦 Dependencies Breakdown
+
+### Main Dependencies (`requirements.txt`)
+```
+fastapi==0.116.1
+uvicorn==0.33.0
+pydantic==2.10.6
+```
+
+### Test Dependencies (`test-requirements.txt`)
+```
+pytest==8.3.5
+pytest-asyncio==0.24.0
+httpx==0.28.1
+fastapi[test]==0.116.1
+```
+
+## 🧪 Test Execution Options
+
+### Basic Test Commands
+```bash
+# Activate environment first
+source test-env/bin/activate
+
+# Run all tests (39 tests)
+python3 run_tests.py
+
+# Run with pytest directly
 python3 -m pytest tests/ -v
 
-# Or use the test runner script
-python3 run_tests.py
+# Run specific test files
+python3 -m pytest tests/test_logic.py -v      # Logic tests only
+python3 -m pytest tests/test_main.py -v       # API tests only
 ```
 
-### Run Specific Test Categories
+### Pattern-Based Testing
 ```bash
-# Run only logic tests
-python3 -m pytest tests/test_logic.py -v
+# Budget-related tests
+python3 run_tests.py "budget"
 
-# Run only API tests  
-python3 -m pytest tests/test_main.py -v
+# Minimum budget tests
+python3 run_tests.py "minimum"
 
-# Run specific test patterns
-python3 run_tests.py "budget"        # Tests containing "budget"
-python3 run_tests.py "minimum"       # Tests containing "minimum"
+# Exception handling tests
+python3 run_tests.py "exception"
+
+# Team builder endpoint tests
+python3 run_tests.py "team_builder"
 ```
 
-### Test Output Examples
-
-**Successful Test Run:**
-```
-============= test session starts =============
-platform darwin -- Python 3.8.5, pytest-8.3.5
-collected 39 items
-
-tests/test_logic.py::TestCalculateRatingToPriceRatio::test_calculate_rating_to_price_ratio_basic PASSED
-tests/test_main.py::TestTeamBuilderEndpoint::test_team_builder_valid_budget PASSED
-...
-============= 39 passed in 5.76s =============
-```
-
-## Test Dependencies
-
+### Advanced Testing Options
 ```bash
-pip install -r test-requirements.txt
+# Stop at first failure
+python3 -m pytest tests/ -x
+
+# Show slowest tests
+python3 -m pytest tests/ --durations=10
+
+# Quiet mode
+python3 -m pytest tests/ -q
+
+# Very verbose
+python3 -m pytest tests/ -vv
+
+# Run specific test
+python3 -m pytest tests/test_logic.py::TestCurateProductTeam::test_curate_product_team_with_sample_data -v
 ```
 
-Required packages:
-- `pytest==8.3.5` - Testing framework
-- `pytest-asyncio==0.24.0` - Async test support
-- `httpx==0.28.1` - HTTP client for API testing
-- `fastapi[test]==0.116.1` - FastAPI test utilities
 
-## Test Configuration
+## 🛠️ Troubleshooting
 
-Tests are configured via `pytest.ini`:
-- Test files: `test_*.py`
-- Test functions: `test_*`
-- Async mode: Auto-detection
-- Verbose output with short tracebacks
+### Virtual Environment Issues
 
-## Key Test Features
+**Problem: `command not found: python3`**
+```bash
+# Try using python instead of python3
+python -m venv test-env
 
-1. **Comprehensive Coverage**: Tests cover all public functions and API endpoints
-2. **Edge Case Handling**: Invalid inputs, boundary conditions, error scenarios
-3. **Budget Sensitivity**: Verifies different budgets produce different results
-4. **Data Integrity**: Validates response structures and model conversion
-5. **Error Validation**: Proper HTTP status codes and exception handling
-6. **Integration Testing**: End-to-end workflow verification
+# Or check your Python installation
+which python
+which python3
+```
 
-## Test Data
+**Problem: Virtual environment not activating**
+```bash
+# Make sure you're in the right directory
+pwd
 
-Tests use:
-- **Sample data**: From `constants.py` for realistic scenarios
-- **Mock data**: Custom test data for edge cases
-- **Mocking**: `unittest.mock` for isolating components
+# Try absolute path
+source /Users/marianita/phiture_react_app/backend/test-env/bin/activate
 
-## Continuous Integration
+# Check if the activate script exists
+ls -la test-env/bin/activate
+```
 
-These tests are designed to run in CI/CD pipelines:
-- No external dependencies
-- Deterministic results
-- Fast execution (~6 seconds)
-- Clear pass/fail criteria
+**Problem: `pip: command not found`**
+```bash
+# Use python -m pip instead
+python3 -m pip install -r requirements.txt
+```
