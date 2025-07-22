@@ -38,22 +38,30 @@ A modern full-stack web application built with Next.js (React + TypeScript) fron
 
 ```
 phiture_react_app/
-├── src/                        # Next.js app directory
-│   ├── app/
-│   │   ├── globals.css        # Global styles
-│   │   ├── layout.tsx         # Root layout component
-│   │   └── page.tsx           # Main page component
-│   └── components/
-│       └── BudgetForm.tsx     # Budget input form component
-├── backend/                   # FastAPI backend
+├── frontend/                   # Next.js frontend application
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── globals.css    # Global styles
+│   │   │   ├── layout.tsx     # Root layout component
+│   │   │   └── page.tsx       # Main page component
+│   │   └── components/
+│   │       └── BudgetForm.tsx # Budget input form component
+│   ├── public/                # Static assets
+│   ├── Dockerfile            # Frontend production container
+│   ├── Dockerfile.dev        # Frontend development container
+│   ├── package.json          # Frontend dependencies
+│   ├── tsconfig.json         # TypeScript configuration
+│   └── next.config.js        # Next.js configuration
+├── backend/                   # FastAPI backend application
 │   ├── main.py               # FastAPI application
 │   ├── requirements.txt      # Python dependencies
-│   └── Dockerfile           # Backend container config
-├── docker-compose.yml        # Multi-service orchestration
-├── Dockerfile               # Frontend container config
-├── package.json             # Node.js dependencies & scripts
-├── tsconfig.json           # TypeScript configuration
-└── next.config.js          # Next.js configuration
+│   ├── Dockerfile           # Backend production container
+│   ├── Dockerfile.dev       # Backend development container
+│   └── .dockerignore        # Backend Docker ignore
+├── docker-compose.yml        # Production orchestration
+├── docker-compose.dev.yml    # Development orchestration
+├── package.json             # Root project management scripts
+└── README.md                # This file
 ```
 
 ## 🛠️ Installation & Setup
@@ -73,7 +81,7 @@ phiture_react_app/
 
 2. **Start the full application**
    ```bash
-   npm run docker:up
+   npm run dev
    ```
    This will:
    - Build both frontend and backend containers
@@ -83,13 +91,16 @@ phiture_react_app/
 
 3. **Stop the application**
    ```bash
-   npm run docker:down
+   npm run dev:down
    ```
 
 ### Local Development Setup
 
 #### Frontend Development
 ```bash
+# Navigate to frontend directory
+cd frontend
+
 # Install dependencies
 npm install
 
@@ -101,6 +112,10 @@ npm run dev
 ```bash
 # Navigate to backend directory
 cd backend
+
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install Python dependencies
 pip install -r requirements.txt
@@ -137,18 +152,20 @@ curl "http://localhost:8000/team-builder?budget=1000.50"
 
 ## 📝 Available Scripts
 
+### Root Level Commands
+
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start Next.js development server |
-| `npm run build` | Build Next.js for production |
-| `npm run start` | Start Next.js production server |
-| `npm run lint` | Run ESLint |
-| `npm run docker:up` | Start full stack with Docker Compose |
-| `npm run docker:down` | Stop Docker Compose services |
-| `npm run docker:logs` | View logs from all containers |
-| `npm run backend:dev` | Start FastAPI backend locally |
-| `npm run backend:logs` | View backend container logs |
-| `npm run frontend:logs` | View frontend container logs |
+| `npm run dev` | Start development environment with Docker |
+| `npm run dev:down` | Stop development environment |
+| `npm run dev:logs` | View development logs |
+| `npm run start` | Start production environment with Docker |
+| `npm run stop` | Stop production environment |
+| `npm run logs` | View production logs |
+| `npm run frontend:dev` | Start frontend locally |
+| `npm run backend:dev` | Start backend locally |
+| `npm run install:all` | Install all dependencies |
+| `npm run clean` | Clean Docker resources |
 
 ## 🌐 Usage
 
